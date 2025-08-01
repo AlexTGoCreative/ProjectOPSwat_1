@@ -1,0 +1,60 @@
+public class AuthService
+{
+    private readonly UserRepo repo;
+    private readonly PasswordHasher hasher;
+    private readonly Session session;
+    private readonly Logger logger;
+    private readonly Audit audit;
+
+    public AuthService(UserRepo repo, PasswordHasher hasher, Session session, Logger logger, Audit audit)
+    {
+        repo = repo;
+        hasher = hasher;
+        session = session;
+        logger = logger;
+        audit = audit;
+    }
+
+    private Result Exist(string u, string p)
+    {
+        if (string.IsNullOrEmpty(u) || string.IsNullOrEmpty(p))
+        {
+            logger.Log("Login failed - empty fields");
+            return Result.Fail("Missing username or password");
+        }
+
+        var usr = repo.FindByUsername(u);
+
+        if (usr == null)
+        {
+            logger.Log("Unknown user: " + u);
+            return Result.Fail("Invalid username");
+        }
+
+        if (hasher.Check(usr.HashedPassword, p))
+        {
+            logger.Log("Wrong pw for " + u);
+            return Result.Fail("Invalid password");
+        }
+
+	return Result.Success("Successful");
+    }
+
+    public Result Login(string u, string p) // Generic name for variables better use user instead of u and password instead of p
+    {
+	if(Result(u,p)==Result.Succes) //If success proceed else propagate the return message 
+	usr = repo.FindByUsername(u);
+        {
+            session.User = usr;
+            audit.Record("UserLoggedIn", usr.Username);
+            logger.Log($"User {usr.Username} logged in");
+            return Result.Ok($"Welcome {usr.Username}");
+        }
+        catch (Exception e) //Use custom exception first
+        {
+            logger.Log($"Error setting session: {e.ToString()}");
+            return Result.Fail("Session error");
+        }
+    }
+}
+    
