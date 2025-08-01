@@ -51,6 +51,13 @@ router.delete("/:id", booksController.deleteBook);
  *   get:
  *     summary: Get all books
  *     tags: [Books]
+ *     parameters:
+ *       - in: query
+ *         name: author
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Filter books by author
  *     responses:
  *       200:
  *         description: List of books
