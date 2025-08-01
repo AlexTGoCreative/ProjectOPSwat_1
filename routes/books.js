@@ -1,22 +1,24 @@
-const express = require('express');
-const { body } = require('express-validator');
-const booksController = require('../controllers/booksController');
+const express = require("express");
+const { body } = require("express-validator");
+const booksController = require("../controllers/booksController");
 const router = express.Router();
 
-router.get('/', booksController.getAllBooks);
-router.get('/:id', booksController.getBookById);
-router.head('/:id', booksController.headBookById);
-router.post('/',
-    body('title').notEmpty().withMessage('Title is required'),
-    body('author').notEmpty().withMessage('Author is required'),
-    booksController.createBook
+router.get("/", booksController.getAllBooks);
+router.get("/:id", booksController.getBookById);
+router.head("/:id", booksController.headBookById);
+router.post(
+  "/",
+  body("title").notEmpty().withMessage("Title is required"),
+  body("author").notEmpty().withMessage("Author is required"),
+  booksController.createBook
 );
-router.put('/:id',
-    body('title').notEmpty().withMessage('Title is required'),
-    body('author').notEmpty().withMessage('Author is required'),
-    booksController.updateBook
+router.put(
+  "/:id",
+  body("title").notEmpty().withMessage("Title is required"),
+  body("author").notEmpty().withMessage("Author is required"),
+  booksController.updateBook
 );
-router.delete('/:id', booksController.deleteBook);
+router.delete("/:id", booksController.deleteBook);
 
 /**
  * @swagger
