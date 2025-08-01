@@ -1,3 +1,9 @@
+async function getBooksByAuthor(author) {
+    return await Book.find({ author: { $regex: new RegExp('^' + author + '$', 'i') } });
+}
+async function getBooksByAuthor(author) {
+    return await Book.find({ author: { $regex: new RegExp('^' + author + '$', 'i') } });
+}
 const Book = require('../models/book');
 const mongoose = require('mongoose');
 
@@ -36,5 +42,6 @@ module.exports = {
     findBookById,
     createBook,
     updateBook,
-    deleteBook
+    deleteBook,
+    getBooksByAuthor
 };

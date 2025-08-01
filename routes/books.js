@@ -4,16 +4,69 @@ const booksController = require('../controllers/booksController');
 const router = express.Router();
 
 router.get('/', booksController.getAllBooks);
+
+/**
+ * @swagger
+ * /books/author:
+ *   get:
+ *     summary: Get books by author
+ *     tags: [Books]
+ *     parameters:
+ *       - in: query
+ *         name: author
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The author to search for
+ *     responses:
+ *       200:
+ *         description: List of books by author
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Book'
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+router.get('/author', async (req, res) => {
+    const author = req.query.author;
+    if (!author || author.trim() === "") {
+        return res.status(400).json({ error: 'Author query parameter is required' });
+    }
+    try {
+        const books = await require('../services/booksService').getBooksByAuthor(author);
+        res.status(200).json(books);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 router.get('/:id', booksController.getBookById);
 router.head('/:id', booksController.headBookById);
 router.post('/',
-    body('title').notEmpty().withMessage('Title is required'),
-    body('author').notEmpty().withMessage('Author is required'),
+    body('title')
+        .notEmpty().withMessage('Title is required')
+        .trim().escape().matches(/^[^$\\.]*$/).withMessage('Invalid characters in title'),
+    body('author')
+        .notEmpty().withMessage('Author is required')
+        .trim().escape().matches(/^[^$\\.]*$/).withMessage('Invalid characters in author'),
     booksController.createBook
 );
 router.put('/:id',
-    body('title').notEmpty().withMessage('Title is required'),
-    body('author').notEmpty().withMessage('Author is required'),
+    body('title')
+        .notEmpty().withMessage('Title is required')
+        .trim().escape().matches(/^[^$\\.]*$/).withMessage('Invalid characters in title'),
+    body('author')
+        .notEmpty().withMessage('Author is required')
+        .trim().escape().matches(/^[^$\\.]*$/).withMessage('Invalid characters in author'),
     booksController.updateBook
 );
 router.delete('/:id', booksController.deleteBook);
